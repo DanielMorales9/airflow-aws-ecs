@@ -47,4 +47,8 @@ locals {
   certificate_arn = var.use_https ? (var.certificate_arn != "" ? var.certificate_arn : aws_acm_certificate.cert[0].arn) : ""
 
   inbound_ports = toset(var.use_https ? ["80", "443"] : ["80"])
+
+  airflow_scheduler_entrypoint = "startup/entrypoint_scheduler.sh"
+  airflow_webserver_entrypoint = "startup/entrypoint_webserver.sh"
+  airflow_init_entrypoint = "startup/entrypoint_init.sh"
 }

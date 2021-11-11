@@ -50,20 +50,20 @@ resource "aws_s3_bucket_object" "airflow_example_dag" {
 
 resource "aws_s3_bucket_object" "airflow_scheduler_entrypoint" {
   bucket  = local.s3_bucket_name
-  key     = "${var.s3_bucket_prefix}/startup/entrypoint_scheduler.sh"
-  content = templatefile("${path.module}/templates/startup/entrypoint_scheduler.sh", { AIRFLOW_HOME = var.airflow_container_home })
+  key     = "${var.s3_bucket_prefix}/${local.airflow_scheduler_entrypoint}"
+  content = templatefile("${path.module}/templates/${local.airflow_scheduler_entrypoint}", { AIRFLOW_HOME = var.airflow_container_home })
 }
 
 resource "aws_s3_bucket_object" "airflow_webserver_entrypoint" {
   bucket  = local.s3_bucket_name
-  key     = "${var.s3_bucket_prefix}/startup/entrypoint_webserver.sh"
-  content = templatefile("${path.module}/templates/startup/entrypoint_webserver.sh", { AIRFLOW_HOME = var.airflow_container_home })
+  key     = "${var.s3_bucket_prefix}/${local.airflow_webserver_entrypoint}"
+  content = templatefile("${path.module}/templates/${local.airflow_webserver_entrypoint}", { AIRFLOW_HOME = var.airflow_container_home })
 }
 
 resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
   bucket = local.s3_bucket_name
-  key    = "${var.s3_bucket_prefix}/startup/entrypoint_init.sh"
-  content = templatefile("${path.module}/templates/startup/entrypoint_init.sh", {
+  key    = "${var.s3_bucket_prefix}/${local.airflow_init_entrypoint}"
+  content = templatefile("${path.module}/templates/${local.airflow_init_entrypoint}", {
     RBAC_AUTH       = var.airflow_authentication == "rbac" ? "true" : "false",
     RBAC_USERNAME   = var.rbac_admin_username,
     RBAC_EMAIL      = var.rbac_admin_email,

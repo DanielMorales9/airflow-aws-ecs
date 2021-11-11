@@ -13,6 +13,7 @@ import boto3
 
 # The bucket name and key the of where dags are stored in S3
 S3_BUCKET_NAME = "${BUCKET_NAME}"
+KEY = "${KEY}"
 # airflow home directory where dags & plugins reside
 AIRFLOW_HOME = "${AIRFLOW_HOME}"
 
@@ -33,12 +34,12 @@ with DAG(
 
     sync_dags = BashOperator(
         task_id="sync_dag_s3_to_airflow",
-        bash_command=f"python -m awscli s3 sync --exclude='*' --include='*.py' --size-only --delete s3://{S3_BUCKET_NAME}/dags/ {AIRFLOW_HOME}/dags/"
+        bash_command=f"python -m awscli s3 sync --exclude='*' --include='*.py' --size-only --delete s3://{S3_BUCKET_NAME}/${KEY}/dags/ {AIRFLOW_HOME}/dags/"
     )
 
     sync_plugins = BashOperator(
         task_id="sync_plugins_s3_to_airflow",
-        bash_command=f"python -m awscli s3 sync --exclude='*' --include='*.py' --size-only --delete s3://{S3_BUCKET_NAME}/plugins/ {AIRFLOW_HOME}/plugins/"
+        bash_command=f"python -m awscli s3 sync --exclude='*' --include='*.py' --size-only --delete s3://{S3_BUCKET_NAME}/${KEY}/plugins/ {AIRFLOW_HOME}/plugins/"
     )
 
     refresh_dag_bag = BashOperator(

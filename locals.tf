@@ -21,7 +21,7 @@ locals {
   db_uri       = var.airflow_executor == "Local" ? local.postgres_uri : "sqlite:////opt/airflow/airflow.db"
 
   s3_bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : aws_s3_bucket.airflow[0].id
-  s3_key         = ""
+  s3_key         = var.s3_bucket_prefix
 
   airflow_py_requirements_path     = var.airflow_py_requirements_path != "" ? var.airflow_py_requirements_path : "${path.module}/templates/startup/requirements.txt"
   airflow_log_region               = var.airflow_log_region != "" ? var.airflow_log_region : var.region

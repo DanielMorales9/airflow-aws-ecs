@@ -30,7 +30,7 @@ resource "aws_s3_bucket_public_access_block" "airflow" {
 
 resource "aws_s3_bucket_object" "airflow_seed_dag" {
   bucket = local.s3_bucket_name
-  key    = "dags/airflow_seed_dag.py"
+  key    = "${var.s3_bucket_prefix}/dags/airflow_seed_dag.py"
   content = templatefile("${path.module}/templates/dags/airflow_seed_dag.py", {
     BUCKET_NAME  = local.s3_bucket_name,
     KEY          = local.s3_key,
@@ -44,25 +44,25 @@ resource "aws_s3_bucket_object" "airflow_seed_dag" {
 resource "aws_s3_bucket_object" "airflow_example_dag" {
   count   = var.airflow_example_dag ? 1 : 0
   bucket  = local.s3_bucket_name
-  key     = "dags/example_dag.py"
+  key     = "${var.s3_bucket_prefix}/dags/example_dag.py"
   content = templatefile("${path.module}/templates/dags/example_dag.py", {})
 }
 
 resource "aws_s3_bucket_object" "airflow_scheduler_entrypoint" {
   bucket  = local.s3_bucket_name
-  key     = "startup/entrypoint_scheduler.sh"
+  key     = "${var.s3_bucket_prefix}/startup/entrypoint_scheduler.sh"
   content = templatefile("${path.module}/templates/startup/entrypoint_scheduler.sh", { AIRFLOW_HOME = var.airflow_container_home })
 }
 
 resource "aws_s3_bucket_object" "airflow_webserver_entrypoint" {
   bucket  = local.s3_bucket_name
-  key     = "startup/entrypoint_webserver.sh"
+  key     = "${var.s3_bucket_prefix}/startup/entrypoint_webserver.sh"
   content = templatefile("${path.module}/templates/startup/entrypoint_webserver.sh", { AIRFLOW_HOME = var.airflow_container_home })
 }
 
 resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
   bucket = local.s3_bucket_name
-  key    = "startup/entrypoint_init.sh"
+  key    = "${var.s3_bucket_prefix}/startup/entrypoint_init.sh"
   content = templatefile("${path.module}/templates/startup/entrypoint_init.sh", {
     RBAC_AUTH       = var.airflow_authentication == "rbac" ? "true" : "false",
     RBAC_USERNAME   = var.rbac_admin_username,
@@ -77,6 +77,6 @@ resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
 resource "aws_s3_bucket_object" "airflow_requirements" {
   count   = var.airflow_py_requirements_path == "" ? 0 : 1
   bucket  = local.s3_bucket_name
-  key     = "startup/requirements.txt"
+  key     = "${var.s3_bucket_prefix}/startup/requirements.txt"
   content = templatefile(local.airflow_py_requirements_path, {})
 }

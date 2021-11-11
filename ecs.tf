@@ -145,7 +145,7 @@ resource "aws_ecs_task_definition" "airflow" {
             }
         ],
         "command": [
-            "/bin/bash -c \"${var.airflow_container_home}/${aws_s3_bucket_object.airflow_webserver_entrypoint.key}\""
+            "/bin/bash -c \"${var.airflow_container_home}/${local.airflow_webserver_entrypoint}\""
         ],
         "entryPoint": [
             "sh",

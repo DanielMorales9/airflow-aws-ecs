@@ -52,9 +52,14 @@ with DAG(
         bash_command="find ${AIRFLOW_HOME}/dags -not -path '*__pycache__*'",
     )
 
+    list_plugins_after = BashOperator(
+        task_id="list_plugins_after",
+        bash_command="find ${AIRFLOW_HOME}/plugins -not -path '*__pycache__*'",
+    )
+
     (
         list_dags_before >>
         [sync_dags, sync_plugins] >>
         refresh_dag_bag >>
-        list_dags_after
+        [list_dags_after, list_plugins_after]
     )

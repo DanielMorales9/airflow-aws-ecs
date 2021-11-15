@@ -39,7 +39,6 @@ locals {
     AIRFLOW__WEBSERVER__BASE_URL : var.use_https ? "https://${local.dns_record}" : "http://localhost:8080" # localhost is default value
   })
 
-  airflow_variables_list = formatlist("{\"name\":\"%s\",\"value\":\"%s\"}", keys(local.airflow_variables), values(local.airflow_variables))
 
   rds_ecs_subnet_ids = length(var.private_subnet_ids) == 0 ? var.public_subnet_ids : var.private_subnet_ids
 
@@ -51,4 +50,6 @@ locals {
   airflow_scheduler_entrypoint = "startup/entrypoint_scheduler.sh"
   airflow_webserver_entrypoint = "startup/entrypoint_webserver.sh"
   airflow_init_entrypoint = "startup/entrypoint_init.sh"
+
+  environment_variables = [for k, v in local.airflow_variables : jsonencode({name: k, value: tostring(v)})]
 }

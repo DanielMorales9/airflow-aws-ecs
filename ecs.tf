@@ -74,7 +74,7 @@ resource "aws_ecs_task_definition" "airflow" {
             "-c"
         ],
         "environment": [
-          ${join(",\n", formatlist("{\"name\":\"%s\",\"value\":\"%s\"}", keys(local.airflow_variables), values(local.airflow_variables)))}
+          ${join(",\n", local.environment_variables)}
         ],
         "logConfiguration": {
           "logDriver": "awslogs",
@@ -113,7 +113,7 @@ resource "aws_ecs_task_definition" "airflow" {
             "-c"
         ],
         "environment": [
-          ${join(",\n", formatlist("{\"name\":\"%s\",\"value\":\"%s\"}", keys(local.airflow_variables), values(local.airflow_variables)))}
+          ${join(",\n", local.environment_variables)}
         ],
         "logConfiguration": {
           "logDriver": "awslogs",
@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "airflow" {
             "-c"
         ],
         "environment": [
-          ${join(",\n", formatlist("{\"name\":\"%s\",\"value\":\"%s\"}", keys(local.airflow_variables), values(local.airflow_variables)))}
+          ${join(",\n", local.environment_variables)}
         ],
         "logConfiguration": {
           "logDriver": "awslogs",

@@ -34,7 +34,7 @@ with DAG(
 
     sync_dags = BashOperator(
         task_id="sync_dag_s3_to_airflow",
-        bash_command=f"python -m awscli s3 sync --exclude='*' --include='*.py' --size-only --delete s3://{S3_BUCKET_NAME}/${KEY}/dags/ {AIRFLOW_HOME}/dags/"
+        bash_command=f"python -m awscli s3 sync --exclude='*' --include='*.py' --include='*.sql' --include='*.html' --size-only --delete s3://{S3_BUCKET_NAME}/${KEY}/dags/ {AIRFLOW_HOME}/dags/"
     )
 
     sync_plugins = BashOperator(

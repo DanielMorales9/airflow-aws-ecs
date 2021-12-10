@@ -1,39 +1,9 @@
-resource "aws_s3_bucket" "airflow" {
-  count  = var.s3_bucket_name == "" ? 1 : 0
-  bucket = "${var.resource_prefix}-airflow-${var.resource_suffix}"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "aws:kms"
-      }
-    }
-  }
-
-  tags = local.common_tags
-}
-
-resource "aws_s3_bucket_public_access_block" "airflow" {
-  count  = var.s3_bucket_name == "" ? 1 : 0
-  bucket = aws_s3_bucket.airflow[0].id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
 resource "aws_s3_bucket_object" "airflow_seed_dag" {
-  bucket = local.s3_bucket_name
+  bucket = var.s3_bucket_name
   key    = "${var.s3_bucket_prefix}/dags/airflow_seed_dag.py"
   content = templatefile("${path.module}/templates/dags/airflow_seed_dag.py", {
-    BUCKET_NAME  = local.s3_bucket_name,
-    KEY          = local.s3_key,
+    BUCKET_NAME  = var.s3_bucket_name,
+    KEY          = var.s3_bucket_prefix,
     AIRFLOW_HOME = var.airflow_container_home
     YEAR         = local.year
     MONTH        = local.month
@@ -43,25 +13,25 @@ resource "aws_s3_bucket_object" "airflow_seed_dag" {
 
 resource "aws_s3_bucket_object" "airflow_example_dag" {
   count   = var.airflow_example_dag ? 1 : 0
-  bucket  = local.s3_bucket_name
+  bucket  = var.s3_bucket_name
   key     = "${var.s3_bucket_prefix}/dags/example_dag.py"
   content = templatefile("${path.module}/templates/dags/example_dag.py", {})
 }
 
 resource "aws_s3_bucket_object" "airflow_scheduler_entrypoint" {
-  bucket  = local.s3_bucket_name
+  bucket  = var.s3_bucket_name
   key     = "${var.s3_bucket_prefix}/${local.airflow_scheduler_entrypoint}"
   content = templatefile("${path.module}/templates/${local.airflow_scheduler_entrypoint}", { AIRFLOW_HOME = var.airflow_container_home })
 }
 
 resource "aws_s3_bucket_object" "airflow_webserver_entrypoint" {
-  bucket  = local.s3_bucket_name
+  bucket  = var.s3_bucket_name
   key     = "${var.s3_bucket_prefix}/${local.airflow_webserver_entrypoint}"
   content = templatefile("${path.module}/templates/${local.airflow_webserver_entrypoint}", { AIRFLOW_HOME = var.airflow_container_home })
 }
 
 resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
-  bucket = local.s3_bucket_name
+  bucket = var.s3_bucket_name
   key    = "${var.s3_bucket_prefix}/${local.airflow_init_entrypoint}"
   content = templatefile("${path.module}/templates/${local.airflow_init_entrypoint}", {
     RBAC_AUTH       = var.airflow_authentication == "rbac" ? "true" : "false",
@@ -76,7 +46,7 @@ resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
 
 resource "aws_s3_bucket_object" "airflow_requirements" {
   count   = var.airflow_py_requirements_path == "" ? 0 : 1
-  bucket  = local.s3_bucket_name
+  bucket  = var.s3_bucket_name
   key     = "${var.s3_bucket_prefix}/startup/requirements.txt"
   content = templatefile(local.airflow_py_requirements_path, {})
 }

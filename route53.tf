@@ -44,7 +44,7 @@ resource "aws_acm_certificate" "cert" {
     create_before_destroy = true
   }
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_acm_certificate_validation" "cert" {

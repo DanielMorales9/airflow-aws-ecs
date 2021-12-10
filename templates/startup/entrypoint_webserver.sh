@@ -11,7 +11,5 @@ if [[ -f "${AIRFLOW_HOME}/startup/requirements.txt" ]]; then
     python -m pip install -r ${AIRFLOW_HOME}/startup/requirements.txt --user
 fi
 
-export AIRFLOW__WEBSERVER__SECRET_KEY=$(openssl rand -hex 30)
-
 # Run the airflow webserver
 airflow webserver

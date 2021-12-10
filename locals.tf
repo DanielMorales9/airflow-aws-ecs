@@ -3,12 +3,13 @@ locals {
     "rbac" = "airflow.contrib.auth.backends.password_auth"
   }
 
-  own_tags = {
-    Name      = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+
+  tags = merge(var.tags, {
+    Name      = local.name
     CreatedBy = "Terraform"
     Module    = "terraform-aws-ecs-airflow"
-  }
-  common_tags = merge(local.own_tags, var.extra_tags)
+  })
 
   timestamp           = timestamp()
   timestamp_sanitized = replace(local.timestamp, "/[- TZ:]/", "")
@@ -16,15 +17,10 @@ locals {
   month               = formatdate("M", local.timestamp)
   day                 = formatdate("D", local.timestamp)
 
-  rds_name     = "${var.resource_prefix}-airflow-${var.resource_suffix}"
-  postgres_uri = var.postgres_uri != "" ? "postgresql+psycopg2://${var.rds_username}:${var.rds_password}@${var.postgres_uri}" : (var.airflow_executor == "Sequential" ? "" : "postgresql+psycopg2://${var.rds_username}:${var.rds_password}@${aws_db_instance.airflow[0].address}:${aws_db_instance.airflow[0].port}/${aws_db_instance.airflow[0].name}")
+  postgres_uri = var.airflow_executor == "Sequential" ? "" : "postgresql+psycopg2://${var.rds_username}:${var.rds_password}@${aws_db_instance.airflow[0].address}:${aws_db_instance.airflow[0].port}/${aws_db_instance.airflow[0].name}"
   db_uri       = var.airflow_executor == "Local" ? local.postgres_uri : "sqlite:////opt/airflow/airflow.db"
 
-  s3_bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : aws_s3_bucket.airflow[0].id
-  s3_key         = var.s3_bucket_prefix
-
   airflow_py_requirements_path     = var.airflow_py_requirements_path != "" ? var.airflow_py_requirements_path : "${path.module}/templates/startup/requirements.txt"
-  airflow_log_region               = var.airflow_log_region != "" ? var.airflow_log_region : var.region
   airflow_webserver_container_name = "${var.resource_prefix}-airflow-webserver-${var.resource_suffix}"
   airflow_scheduler_container_name = "${var.resource_prefix}-airflow-scheduler-${var.resource_suffix}"
   airflow_sidecar_container_name   = "${var.resource_prefix}-airflow-sidecar-${var.resource_suffix}"
@@ -32,6 +28,7 @@ locals {
   airflow_volume_name              = "airflow"
   // Keep the 2 env vars second, we want to override them (this module manges these vars)
   airflow_variables = merge(var.airflow_variables, {
+    AIRFLOW__WEBSERVER__SECRET_KEY : var.airflow_secret_key
     AIRFLOW__CORE__SQL_ALCHEMY_CONN : local.db_uri,
     AIRFLOW__CORE__EXECUTOR : "${var.airflow_executor}Executor",
     AIRFLOW__WEBSERVER__RBAC : var.airflow_authentication == "" ? false : true,
@@ -49,7 +46,7 @@ locals {
 
   airflow_scheduler_entrypoint = "startup/entrypoint_scheduler.sh"
   airflow_webserver_entrypoint = "startup/entrypoint_webserver.sh"
-  airflow_init_entrypoint = "startup/entrypoint_init.sh"
+  airflow_init_entrypoint      = "startup/entrypoint_init.sh"
 
-  environment_variables = [for k, v in local.airflow_variables : jsonencode({name: k, value: tostring(v)})]
+  environment_variables = [for k, v in local.airflow_variables : jsonencode({ name : k, value : tostring(v) })]
 }

@@ -1,23 +1,23 @@
 resource "aws_cloudwatch_log_group" "airflow" {
-  name              = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name              = local.name
   retention_in_days = var.airflow_log_retention
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_ecs_cluster" "airflow" {
-  name               = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name               = local.name
   capacity_providers = ["FARGATE_SPOT", "FARGATE"]
 
   default_capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
   }
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_ecs_task_definition" "airflow" {
-  family                   = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  family                   = local.name
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.ecs_cpu
   memory                   = var.ecs_memory
@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "airflow" {
         "image": "mikesir87/aws-cli",
         "name": "${local.airflow_sidecar_container_name}",
         "command": [
-            "/bin/bash -c \"aws s3 cp s3://${local.s3_bucket_name}/${local.s3_key} ${var.airflow_container_home} --recursive && chmod +x ${var.airflow_container_home}/${local.airflow_scheduler_entrypoint} && chmod +x ${var.airflow_container_home}/${local.airflow_webserver_entrypoint} && chmod -R 777 ${var.airflow_container_home}\""
+            "/bin/bash -c \"aws s3 cp s3://${var.s3_bucket_name}/${var.s3_bucket_prefix} ${var.airflow_container_home} --recursive && chmod +x ${var.airflow_container_home}/${local.airflow_scheduler_entrypoint} && chmod +x ${var.airflow_container_home}/${local.airflow_webserver_entrypoint} && chmod -R 777 ${var.airflow_container_home}\""
         ],
         "entryPoint": [
             "sh",
@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "airflow" {
           "logDriver": "awslogs",
           "options": {
             "awslogs-group": "${aws_cloudwatch_log_group.airflow.name}",
-            "awslogs-region": "${local.airflow_log_region}",
+            "awslogs-region": "${var.region}",
             "awslogs-stream-prefix": "airflow"
           }
         },
@@ -80,7 +80,7 @@ resource "aws_ecs_task_definition" "airflow" {
           "logDriver": "awslogs",
           "options": {
             "awslogs-group": "${aws_cloudwatch_log_group.airflow.name}",
-            "awslogs-region": "${local.airflow_log_region}",
+            "awslogs-region": "${var.region}",
             "awslogs-stream-prefix": "airflow"
           }
         },
@@ -119,7 +119,7 @@ resource "aws_ecs_task_definition" "airflow" {
           "logDriver": "awslogs",
           "options": {
             "awslogs-group": "${aws_cloudwatch_log_group.airflow.name}",
-            "awslogs-region": "${local.airflow_log_region}",
+            "awslogs-region": "${var.region}",
             "awslogs-stream-prefix": "airflow"
           }
         },
@@ -158,7 +158,7 @@ resource "aws_ecs_task_definition" "airflow" {
           "logDriver": "awslogs",
           "options": {
             "awslogs-group": "${aws_cloudwatch_log_group.airflow.name}",
-            "awslogs-region": "${local.airflow_log_region}",
+            "awslogs-region": "${var.region}",
             "awslogs-stream-prefix": "airflow"
           }
         },
@@ -183,7 +183,7 @@ resource "aws_ecs_task_definition" "airflow" {
     ]
   TASK_DEFINITION
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 
@@ -196,7 +196,7 @@ resource "aws_ecs_task_definition" "airflow" {
 resource "aws_ecs_service" "airflow" {
   depends_on = [aws_lb.airflow, aws_db_instance.airflow]
 
-  name            = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name            = local.name
   cluster         = aws_ecs_cluster.airflow.id
   task_definition = aws_ecs_task_definition.airflow.id
   desired_count   = 1
@@ -222,7 +222,7 @@ resource "aws_ecs_service" "airflow" {
 }
 
 resource "aws_lb_target_group" "airflow" {
-  name        = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name        = local.name
   vpc_id      = var.vpc_id
   protocol    = "HTTP"
   port        = 8080
@@ -240,5 +240,5 @@ resource "aws_lb_target_group" "airflow" {
     create_before_destroy = true
   }
 
-  tags = local.common_tags
+  tags = local.tags
 }

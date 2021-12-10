@@ -1,6 +1,6 @@
 resource "aws_db_instance" "airflow" {
-  count                      = var.postgres_uri != "" || var.airflow_executor == "Sequential" ? 0 : 1
-  name                       = replace(title(local.rds_name), "-", "")
+  count                      = var.airflow_executor == "Sequential" ? 0 : 1
+  name                       = replace(title(local.name), "-", "")
   allocated_storage          = var.rds_allocated_storage
   storage_type               = var.rds_storage_type
   engine                     = var.rds_engine
@@ -15,17 +15,17 @@ resource "aws_db_instance" "airflow" {
   deletion_protection        = var.rds_deletion_protection
   skip_final_snapshot        = var.rds_skip_final_snapshot
   final_snapshot_identifier  = "${var.resource_prefix}-airflow-${var.resource_suffix}-${local.timestamp_sanitized}"
-  identifier                 = local.rds_name
+  identifier                 = local.name
   vpc_security_group_ids     = [aws_security_group.airflow.id]
   db_subnet_group_name       = aws_db_subnet_group.airflow[0].name
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_db_subnet_group" "airflow" {
-  count      = var.postgres_uri != "" || var.airflow_executor == "Sequential" ? 0 : 1
-  name       = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  count      = var.airflow_executor == "Sequential" ? 0 : 1
+  name       = local.name
   subnet_ids = local.rds_ecs_subnet_ids
 
-  tags = local.common_tags
+  tags = local.tags
 }

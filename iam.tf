@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "task_permissions" {
 
   statement {
     effect    = "Allow"
-    resources = ["arn:aws:s3:::${local.s3_bucket_name}", "arn:aws:s3:::${local.s3_bucket_name}/*"]
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}", "arn:aws:s3:::${var.s3_bucket_name}/*"]
     actions   = ["s3:ListBucket", "s3:GetObject"]
   }
 
@@ -62,7 +62,7 @@ resource "aws_iam_role" "execution" {
   name               = "${var.resource_prefix}-airflow-task-execution-role-${var.resource_suffix}"
   assume_role_policy = data.aws_iam_policy_document.task_assume.json
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 # role for the airflow instance itself
@@ -70,7 +70,7 @@ resource "aws_iam_role" "task" {
   name               = "${var.resource_prefix}-airflow-task-role-${var.resource_suffix}"
   assume_role_policy = data.aws_iam_policy_document.task_assume.json
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy" "task_execution" {

@@ -12,7 +12,7 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_security_group_rule" "alb_outside_http" {
@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "alb_outside_http" {
 // the airflow ecs task. For example rds and the alb
 resource "aws_security_group" "airflow" {
   vpc_id      = var.vpc_id
-  name        = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name        = local.name
   description = "Security group to connect to the airflow instance"
 
   egress {
@@ -41,7 +41,7 @@ resource "aws_security_group" "airflow" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = local.common_tags
+  tags = local.tags
 
 }
 
@@ -56,7 +56,7 @@ resource "aws_security_group_rule" "airflow_connection" {
 
 // ALB
 resource "aws_lb" "airflow" {
-  name               = "${var.resource_prefix}-airflow-${var.resource_suffix}"
+  name               = local.name
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id, aws_security_group.airflow.id]
@@ -64,7 +64,7 @@ resource "aws_lb" "airflow" {
 
   enable_deletion_protection = false
 
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_lb_listener" "airflow" {

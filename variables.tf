@@ -14,7 +14,7 @@ variable "resource_suffix" {
   description = "A suffix for the created resources, example the environment for airflow to run in (be aware of the resource name length)"
 }
 
-variable "extra_tags" {
+variable "tags" {
   description = "Extra tags that you would like to add to all created resources"
   type        = map(string)
   default     = {}
@@ -73,12 +73,6 @@ variable "airflow_container_home" {
   default     = "/opt/airflow"
 }
 
-variable "airflow_log_region" {
-  type        = string
-  description = "The region you want your airflow logs in, defaults to the region variable"
-  default     = ""
-}
-
 variable "airflow_log_retention" {
   type        = string
   description = "The number of days you want to keep the log of airflow container"
@@ -90,6 +84,12 @@ variable "airflow_example_dag" {
   description = "Add an example dag on startup (mostly for sanity check)"
   default     = true
 }
+
+variable "airflow_secret_key" {
+  type        = string
+  description = "Webserver Secret Key (Shared across all components)"
+}
+
 
 // RBAC
 variable "rbac_admin_username" {
@@ -200,12 +200,6 @@ variable "route53_zone_name" {
 
 
 // Database variables
-variable "postgres_uri" {
-  type        = string
-  description = "The postgres uri of your postgres db, if none provided a postgres db in rds is made. Format \"<db_username>:<db_password>@<db_endpoint>:<db_port>/<db_name>\""
-  default     = ""
-}
-
 variable "rds_allocated_storage" {
   type        = number
   description = "The allocated storage for the rds db in gibibytes"
@@ -273,8 +267,7 @@ variable "rds_version" {
 // S3 Bucket
 variable "s3_bucket_name" {
   type        = string
-  default     = ""
-  description = "The S3 bucket name where the DAGs and startup scripts will be stored, leave this blank to let this module create a s3 bucket for you. WARNING: this module will put files into the path \"dags/\" and \"startup/\" of the bucket"
+  description = "The S3 bucket name where the DAGs and startup scripts will be stored. WARNING: this module will put files into the path \"dags/\" and \"startup/\" of the bucket"
 }
 
 // S3 bucket_prefix

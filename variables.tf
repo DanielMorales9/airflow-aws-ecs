@@ -79,12 +79,6 @@ variable "airflow_log_retention" {
   default     = "7"
 }
 
-variable "airflow_example_dag" {
-  type        = bool
-  description = "Add an example dag on startup (mostly for sanity check)"
-  default     = true
-}
-
 variable "airflow_secret_key" {
   type        = string
   description = "Webserver Secret Key (Shared across all components)"

@@ -11,13 +11,6 @@ resource "aws_s3_bucket_object" "airflow_seed_dag" {
   })
 }
 
-resource "aws_s3_bucket_object" "airflow_example_dag" {
-  count   = var.airflow_example_dag ? 1 : 0
-  bucket  = var.s3_bucket_name
-  key     = "${var.s3_bucket_prefix}/dags/example_dag.py"
-  content = templatefile("${path.module}/templates/dags/example_dag.py", {})
-}
-
 resource "aws_s3_bucket_object" "airflow_scheduler_entrypoint" {
   bucket  = var.s3_bucket_name
   key     = "${var.s3_bucket_prefix}/${local.airflow_scheduler_entrypoint}"

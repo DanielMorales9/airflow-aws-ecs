@@ -1,8 +1,4 @@
 locals {
-  auth_map = {
-    "rbac" = "airflow.contrib.auth.backends.password_auth"
-  }
-
   name = "${var.resource_prefix}-airflow-${var.resource_suffix}"
 
   tags = merge(var.tags, {
@@ -33,8 +29,8 @@ locals {
     AIRFLOW__WEBSERVER__SECRET_KEY : random_string.random.result
     AIRFLOW__CORE__SQL_ALCHEMY_CONN : local.db_uri,
     AIRFLOW__CORE__EXECUTOR : "${var.airflow_executor}Executor",
-    AIRFLOW__WEBSERVER__RBAC : var.airflow_authentication == "" ? false : true,
-    AIRFLOW__WEBSERVER__AUTH_BACKEND : lookup(local.auth_map, var.airflow_authentication, "")
+    AIRFLOW__WEBSERVER__RBAC : true,
+    AIRFLOW__WEBSERVER__AUTH_BACKEND : "airflow.contrib.auth.backends.password_auth"
     AIRFLOW__WEBSERVER__BASE_URL : var.use_https ? "https://${local.dns_record}" : "http://localhost:8080" # localhost is default value
   })
 

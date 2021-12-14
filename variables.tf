@@ -44,17 +44,6 @@ variable "airflow_executor" {
   }
 }
 
-variable "airflow_authentication" {
-  type        = string
-  description = "Authentication backend to be used, supported backends [\"\", \"rbac\"]. When \"rbac\" is selected an admin role is create if there are no other users in the db, from here you can create all the other users. Make sure to change the admin password directly upon first login! (if you don't change the rbac_admin options the default login is => username: admin, password: admin)"
-  default     = ""
-
-  validation {
-    condition     = contains(["", "rbac"], var.airflow_authentication)
-    error_message = "The only values that are allowed for \"airflow_executor\" are [\"\", \"rbac\"]."
-  }
-}
-
 variable "airflow_py_requirements_path" {
   type        = string
   description = "The relative path to a python requirements.txt file to install extra packages in the container that you can use in your DAGs."
@@ -78,6 +67,7 @@ variable "airflow_log_retention" {
   description = "The number of days you want to keep the log of airflow container"
   default     = "7"
 }
+
 
 // RBAC
 variable "rbac_admin_username" {

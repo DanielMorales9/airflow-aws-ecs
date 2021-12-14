@@ -27,7 +27,7 @@ resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
   bucket = var.s3_bucket_name
   key    = "${var.s3_bucket_prefix}/${local.airflow_init_entrypoint}"
   content = templatefile("${path.module}/templates/${local.airflow_init_entrypoint}", {
-    RBAC_AUTH       = var.airflow_authentication == "rbac" ? "true" : "false",
+    RBAC_AUTH       = "true",
     RBAC_USERNAME   = var.rbac_admin_username,
     RBAC_EMAIL      = var.rbac_admin_email,
     RBAC_FIRSTNAME  = var.rbac_admin_firstname,

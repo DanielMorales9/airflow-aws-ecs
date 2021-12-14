@@ -1,6 +1,6 @@
 resource "random_string" "random" {
   length  = 16
-  special = true
+  special = false
 }
 
 resource "aws_db_instance" "this" {

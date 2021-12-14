@@ -30,7 +30,7 @@ locals {
 
   // Keep the 2 env vars second, we want to override them (this module manges these vars)
   airflow_variables = merge(var.airflow_variables, {
-    AIRFLOW__WEBSERVER__SECRET_KEY : var.airflow_secret_key
+    AIRFLOW__WEBSERVER__SECRET_KEY : random_string.random.result
     AIRFLOW__CORE__SQL_ALCHEMY_CONN : local.db_uri,
     AIRFLOW__CORE__EXECUTOR : "${var.airflow_executor}Executor",
     AIRFLOW__WEBSERVER__RBAC : var.airflow_authentication == "" ? false : true,
@@ -50,4 +50,9 @@ locals {
   airflow_init_entrypoint      = "startup/entrypoint_init.sh"
 
   environment_variables = [for k, v in local.airflow_variables : jsonencode({ name : k, value : tostring(v) })]
+}
+
+resource "random_string" "random" {
+  length  = 16
+  special = true
 }

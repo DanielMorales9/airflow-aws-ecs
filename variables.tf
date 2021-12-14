@@ -79,12 +79,6 @@ variable "airflow_log_retention" {
   default     = "7"
 }
 
-variable "airflow_secret_key" {
-  type        = string
-  description = "Webserver Secret Key (Shared across all components)"
-}
-
-
 // RBAC
 variable "rbac_admin_username" {
   type        = string

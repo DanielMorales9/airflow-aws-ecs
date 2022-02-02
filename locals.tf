@@ -17,7 +17,6 @@ locals {
   postgres_uri  = var.airflow_executor == "Sequential" ? "" : module.rds[0].uri
   db_uri        = var.airflow_executor == "Local" ? local.postgres_uri : local.sqlite_db_uri
 
-  airflow_py_requirements_path     = var.airflow_py_requirements_path != "" ? var.airflow_py_requirements_path : "${path.module}/templates/startup/requirements.txt"
   airflow_webserver_container_name = "${var.resource_prefix}-airflow-webserver-${var.resource_suffix}"
   airflow_scheduler_container_name = "${var.resource_prefix}-airflow-scheduler-${var.resource_suffix}"
   airflow_sidecar_container_name   = "${var.resource_prefix}-airflow-sidecar-${var.resource_suffix}"

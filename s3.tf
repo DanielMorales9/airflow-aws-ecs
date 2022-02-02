@@ -36,10 +36,3 @@ resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
     AIRFLOW_VERSION = var.airflow_image_tag
   })
 }
-
-resource "aws_s3_bucket_object" "airflow_requirements" {
-  count   = var.airflow_py_requirements_path == "" ? 0 : 1
-  bucket  = var.s3_bucket_name
-  key     = "${var.s3_bucket_prefix}/startup/requirements.txt"
-  content = templatefile(local.airflow_py_requirements_path, {})
-}

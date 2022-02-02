@@ -44,12 +44,6 @@ variable "airflow_executor" {
   }
 }
 
-variable "airflow_py_requirements_path" {
-  type        = string
-  description = "The relative path to a python requirements.txt file to install extra packages in the container that you can use in your DAGs."
-  default     = ""
-}
-
 variable "airflow_variables" {
   type        = map(string)
   description = "The variables passed to airflow as an environment variable (see airflow docs for more info https://airflow.apache.org/docs/). You can not specify \"AIRFLOW__CORE__SQL_ALCHEMY_CONN\" and \"AIRFLOW__CORE__EXECUTOR\" (managed by this module)"

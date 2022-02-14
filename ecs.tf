@@ -201,7 +201,7 @@ resource "aws_ecs_service" "airflow" {
   task_definition = aws_ecs_task_definition.airflow.id
   desired_count   = 1
 
-  health_check_grace_period_seconds = 120
+  health_check_grace_period_seconds = 300
 
   network_configuration {
     subnets          = local.rds_ecs_subnet_ids

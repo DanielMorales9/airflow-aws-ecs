@@ -1,3 +1,8 @@
+"""
+When triggered, this das syncs the content in the s3 bucket to the local ecs task instance,
+thus all its dags, plugins, sql scripts and html files.
+"""
+
 import os
 from os import listdir
 from os.path import isfile, join

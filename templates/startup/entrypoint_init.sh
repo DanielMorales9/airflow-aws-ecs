@@ -8,6 +8,7 @@ if [[ "$airflow_major_version" == "1" ]]; then
     airflow initdb
 else
     airflow db init
+    airflow db upgrade
 fi
 
 # add admin user if rbac enabled and not exists

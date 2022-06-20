@@ -41,8 +41,8 @@ resource "aws_ecs_cluster" "airflow" {
 resource "aws_ecs_task_definition" "webserver" {
   family                   = "airflow-webserver-${var.resource_suffix}"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 512
-  memory                   = 1024
+  cpu                      = 1024
+  memory                   = 2048
   network_mode             = local.network_mode
   task_role_arn            = aws_iam_role.task.arn
   execution_role_arn       = aws_iam_role.execution.arn

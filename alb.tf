@@ -95,3 +95,25 @@ resource "aws_lb_listener" "airflow_http_redirect" {
     }
   }
 }
+
+resource "aws_lb_target_group" "airflow" {
+  name        = local.name
+  vpc_id      = var.vpc_id
+  protocol    = "HTTP"
+  port        = 8080
+  target_type = "ip"
+
+  health_check {
+    port                = 8080
+    protocol            = "HTTP"
+    interval            = 30
+    unhealthy_threshold = 5
+    matcher             = "200-399"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = local.tags
+}

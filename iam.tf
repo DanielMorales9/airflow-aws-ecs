@@ -35,9 +35,24 @@ data "aws_iam_policy_document" "task_permissions" {
   }
 
   statement {
-    effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}", "arn:aws:s3:::${var.s3_bucket_name}/*"]
-    actions   = ["s3:ListBucket", "s3:GetObject"]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::${var.s3_bucket_name}",
+      "arn:aws:s3:::${var.s3_bucket_name}/*",
+      "arn:aws:s3:::${var.logging_bucket}",
+      "arn:aws:s3:::${var.logging_bucket}/*"
+    ]
+    actions = ["s3:*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    resources = [
+      "*"
+    ]
+
+    actions = ["sqs:*"]
   }
 
 }
@@ -54,6 +69,17 @@ data "aws_iam_policy_document" "task_execution_permissions" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
+  }
+
+
+  statement {
+    effect = "Allow"
+
+    resources = [
+      "*"
+    ]
+
+    actions = ["ecr:*"]
   }
 }
 

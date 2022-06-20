@@ -1,10 +1,10 @@
 data "aws_route53_zone" "zone" {
-  count = var.route53_zone_name != "" ? 1 : 0
+  count = local.if_route53_name
   name  = var.route53_zone_name
 }
 
 resource "aws_route53_record" "airflow" {
-  count   = var.route53_zone_name != "" ? 1 : 0
+  count   = local.if_route53_name
   zone_id = data.aws_route53_zone.zone[0].id
   name    = local.dns_record
   type    = "A"

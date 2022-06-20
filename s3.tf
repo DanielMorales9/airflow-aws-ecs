@@ -11,16 +11,12 @@ resource "aws_s3_bucket_object" "airflow_seed_dag" {
   })
 }
 
-resource "aws_s3_bucket_object" "airflow_scheduler_entrypoint" {
-  bucket  = var.s3_bucket_name
-  key     = "${var.s3_bucket_prefix}/${local.airflow_scheduler_entrypoint}"
-  content = templatefile("${path.module}/templates/${local.airflow_scheduler_entrypoint}", { AIRFLOW_HOME = var.airflow_container_home })
-}
-
-resource "aws_s3_bucket_object" "airflow_webserver_entrypoint" {
-  bucket  = var.s3_bucket_name
-  key     = "${var.s3_bucket_prefix}/${local.airflow_webserver_entrypoint}"
-  content = templatefile("${path.module}/templates/${local.airflow_webserver_entrypoint}", { AIRFLOW_HOME = var.airflow_container_home })
+resource "aws_s3_bucket_object" "airflow_entrypoint" {
+  bucket = var.s3_bucket_name
+  key    = "${var.s3_bucket_prefix}/${local.airflow_entrypoint}"
+  content = templatefile("${path.module}/templates/${local.airflow_entrypoint}", {
+    AIRFLOW_HOME = var.airflow_container_home,
+  })
 }
 
 resource "aws_s3_bucket_object" "airflow_init_entrypoint" {
